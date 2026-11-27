@@ -34,6 +34,20 @@ def mejor_inversion(campanas, presupuesto):
     return dp[n][presupuesto], elegidas
 
 
+def inversion_greedy(campanas, presupuesto):
+    """Greedy: ordena por densidad (retorno/costo) y contrata mientras alcance."""
+    ordenadas = sorted(campanas, key=lambda c: c[2] / c[1], reverse=True)
+    total = 0
+    elegidas = []
+    restante = presupuesto
+    for nombre, costo, retorno in ordenadas:
+        if costo <= restante:      # si todavía alcanza, la contratamos
+            elegidas.append(nombre)
+            total += retorno
+            restante -= costo
+    return total, elegidas
+
+
 if __name__ == "__main__":
     campanas = [
         ("video en redes", 6, 30),    # (nombre, costo, retorno) en miles de dólares
@@ -43,6 +57,15 @@ if __name__ == "__main__":
     presupuesto = 10
 
     retorno_pd, elegidas_pd = mejor_inversion(campanas, presupuesto)
+    retorno_gr, elegidas_gr = inversion_greedy(campanas, presupuesto)
+
+    print("Comparación de métodos (miles de dólares)")
+    print("-" * 45)
     print("Programación dinámica")
     print(f"  Retorno máximo: {retorno_pd}")
     print(f"  Campañas elegidas: {', '.join(elegidas_pd)}")
+    print("Greedy (por densidad retorno/costo)")
+    print(f"  Retorno obtenido: {retorno_gr}")
+    print(f"  Campañas elegidas: {', '.join(elegidas_gr)}")
+    print("-" * 45)
+    print(f"Diferencia a favor de programación dinámica: {retorno_pd - retorno_gr}")
